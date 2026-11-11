@@ -10,6 +10,7 @@ import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 
 import { fields } from './fields'
 import { getClientSideURL } from '@/utilities/getURL'
+import { storedUtm } from '@/utilities/utm'
 
 export type FormBlockType = {
   blockName?: string
@@ -52,7 +53,12 @@ export const FormBlock: React.FC<
       const submitForm = async () => {
         setError(undefined)
 
-        const dataToSend = Object.entries(data).map(([name, value]) => ({
+        // Los UTMs y la página viajan como campos extra para atribuir el lead en el CRM.
+        const dataToSend = Object.entries({
+          ...data,
+          ...storedUtm(),
+          page: window.location.pathname,
+        }).map(([name, value]) => ({
           field: name,
           value,
         }))
